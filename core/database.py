@@ -32,12 +32,12 @@ def init_db():
             company_domain TEXT DEFAULT '',
             salary TEXT DEFAULT '',
             job_type TEXT DEFAULT '',
-            india_friendly TEXT DEFAULT 'unknown',
+            kenya_friendly TEXT DEFAULT 'unknown',
             location_note TEXT DEFAULT ''
         )
     """)
     # Migration for existing DBs
-    for col, default in [("india_friendly", "'unknown'"), ("location_note", "''"), ("last_seen", "''")]:
+    for col, default in [("kenya_friendly", "'unknown'"), ("location_note", "''"), ("last_seen", "''")]:
         try:
             conn.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT DEFAULT {default}")
         except sqlite3.OperationalError:
@@ -63,7 +63,7 @@ def init_db():
             founded_year INTEGER DEFAULT 0,
             employee_count TEXT DEFAULT '',
             tags TEXT DEFAULT '',
-            india_friendly TEXT DEFAULT 'unknown',
+            kenya_friendly TEXT DEFAULT 'unknown',
             last_crawled TEXT DEFAULT '',
             crawl_status TEXT DEFAULT 'active',
             notes TEXT DEFAULT ''
@@ -190,7 +190,7 @@ def init_db():
     conn.execute("CREATE INDEX IF NOT EXISTS idx_source ON jobs(source)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_status ON jobs(status)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_discovered ON jobs(discovered_at DESC)")
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_india ON jobs(india_friendly)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_kenya ON jobs(kenya_friendly)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_company_domain ON jobs(company_domain)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_company_ats ON companies(ats_platform)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_company_status ON companies(crawl_status)")
@@ -232,13 +232,13 @@ def insert_job(job_dict: dict) -> str:
                             source, posted_date, discovered_at, tech_stack,
                             experience_level, relevance_score, status,
                             company_domain, salary, job_type,
-                            india_friendly, location_note, last_seen,
+                            kenya_friendly, location_note, last_seen,
                             scored_profile_id)
             VALUES (:id, :title, :company, :location, :description, :url,
                     :source, :posted_date, :discovered_at, :tech_stack,
                     :experience_level, :relevance_score, :status,
                     :company_domain, :salary, :job_type,
-                    :india_friendly, :location_note, :last_seen,
+                    :kenya_friendly, :location_note, :last_seen,
                     :scored_profile_id)
         """, job_dict)
         conn.commit()
@@ -296,7 +296,7 @@ def get_jobs(
     search: Optional[str] = None,
     location: Optional[str] = None,
     tech: Optional[str] = None,
-    india_friendly: Optional[str] = None,
+    kenya_friendly: Optional[str] = None,
     company_domain: Optional[str] = None,
     seen_after: Optional[str] = None,     # ISO timestamp; only jobs refreshed at/after this
     limit: int = 100,
@@ -322,13 +322,13 @@ def get_jobs(
     if tech:
         query += " AND tech_stack LIKE ?"
         params.append(f"%{tech}%")
-    if india_friendly:
-        if india_friendly == "yes":
-            query += " AND india_friendly = 'yes'"
-        elif india_friendly == "no":
-            query += " AND india_friendly = 'no'"
-        elif india_friendly == "maybe":
-            query += " AND india_friendly IN ('yes', 'maybe')"
+    if kenya_friendly:
+        if kenya_friendly == "yes":
+            query += " AND kenya_friendly = 'yes'"
+        elif kenya_friendly == "no":
+            query += " AND kenya_friendly = 'no'"
+        elif kenya_friendly == "maybe":
+            query += " AND kenya_friendly IN ('yes', 'maybe')"
     if company_domain:
         query += " AND company_domain = ?"
         params.append(company_domain)
@@ -367,8 +367,8 @@ def get_stats() -> dict:
     by_status = conn.execute(
         "SELECT status, COUNT(*) as count FROM jobs GROUP BY status"
     ).fetchall()
-    by_india = conn.execute(
-        "SELECT india_friendly, COUNT(*) as count FROM jobs GROUP BY india_friendly"
+    by_kenya = conn.execute(
+        "SELECT kenya_friendly, COUNT(*) as count FROM jobs GROUP BY kenya_friendly"
     ).fetchall()
     avg_score = conn.execute(
         "SELECT AVG(relevance_score) FROM jobs WHERE relevance_score > 0"
@@ -378,7 +378,7 @@ def get_stats() -> dict:
         "total": total,
         "by_source": {row["source"]: row["count"] for row in by_source},
         "by_status": {row["status"]: row["count"] for row in by_status},
-        "by_india": {row["india_friendly"]: row["count"] for row in by_india},
+        "by_kenya": {row["kenya_friendly"]: row["count"] for row in by_kenya},
         "avg_score": round(avg_score, 1) if avg_score else 0,
     }
 
@@ -398,10 +398,10 @@ def upsert_company(company_dict: dict) -> bool:
         conn.execute("""
             INSERT OR REPLACE INTO companies
                 (id, name, domain, careers_url, ats_platform, ats_slug,
-                 founded_year, employee_count, tags, india_friendly,
+                 founded_year, employee_count, tags, kenya_friendly,
                  last_crawled, crawl_status, notes)
             VALUES (:id, :name, :domain, :careers_url, :ats_platform, :ats_slug,
-                    :founded_year, :employee_count, :tags, :india_friendly,
+                    :founded_year, :employee_count, :tags, :kenya_friendly,
                     :last_crawled, :crawl_status, :notes)
         """, company_dict)
         conn.commit()
@@ -415,7 +415,7 @@ def upsert_company(company_dict: dict) -> bool:
 def get_companies(
     ats_platform: Optional[str] = None,
     crawl_status: Optional[str] = None,
-    india_friendly: Optional[str] = None,
+    kenya_friendly: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = 200,
     offset: int = 0,
@@ -430,9 +430,9 @@ def get_companies(
     if crawl_status:
         query += " AND crawl_status = ?"
         params.append(crawl_status)
-    if india_friendly:
-        query += " AND india_friendly = ?"
-        params.append(india_friendly)
+    if kenya_friendly:
+        query += " AND kenya_friendly = ?"
+        params.append(kenya_friendly)
     if search:
         query += " AND (name LIKE ? OR domain LIKE ? OR tags LIKE ?)"
         s = f"%{search}%"
@@ -504,7 +504,7 @@ def get_outreach(
     conn = get_connection()
     query = """
         SELECT o.*, j.url as job_url, j.relevance_score, j.tech_stack,
-               j.location, j.salary, j.india_friendly
+               j.location, j.salary, j.kenya_friendly
         FROM outreach o
         LEFT JOIN jobs j ON j.id = o.job_id
         WHERE 1=1
@@ -640,7 +640,7 @@ def get_unemailed_outreach(limit: int = 15, only_marked: bool = False) -> list[d
 
     rows = conn.execute(f"""
         SELECT o.*, j.relevance_score, j.url AS job_url, j.description AS job_description,
-               j.tech_stack, j.salary, j.location, j.posted_date, j.india_friendly,
+               j.tech_stack, j.salary, j.location, j.posted_date, j.kenya_friendly,
                j.mark_for_email
         FROM outreach o
         LEFT JOIN jobs j ON j.id = o.job_id
@@ -790,13 +790,13 @@ def get_company_stats() -> dict:
     by_status = conn.execute(
         "SELECT crawl_status, COUNT(*) as count FROM companies GROUP BY crawl_status"
     ).fetchall()
-    by_india = conn.execute(
-        "SELECT india_friendly, COUNT(*) as count FROM companies GROUP BY india_friendly"
+    by_kenya = conn.execute(
+        "SELECT kenya_friendly, COUNT(*) as count FROM companies GROUP BY kenya_friendly"
     ).fetchall()
     conn.close()
     return {
         "total": total,
         "by_platform": {row["ats_platform"]: row["count"] for row in by_platform},
         "by_status": {row["crawl_status"]: row["count"] for row in by_status},
-        "by_india": {row["india_friendly"]: row["count"] for row in by_india},
+        "by_kenya": {row["kenya_friendly"]: row["count"] for row in by_kenya},
     }
