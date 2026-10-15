@@ -1,6 +1,6 @@
 """Rule-based relevance scorer. No API key needed.
 Scores jobs 0-100 based on title, description, and tech stack match.
-Also detects whether a job is India-remote-friendly.
+Also detects whether a job is kenya-remote-friendly.
 
 All preferences (keyword lists, weights, experience target, candidate core tech)
 come from the active profile (see core.profile). Callers can pass `profile=`
@@ -52,25 +52,25 @@ def estimate_experience_level(text: str) -> str:
     return "mid"
 
 
-def check_india_friendly(location: str, description: str,
+def check_kenya_friendly(location: str, description: str,
                          profile: dict = None) -> dict:
-    """Determine if a remote job is accessible from India.
+    """Determine if a remote job is accessible from kenya.
     Returns:
         result: 'yes' | 'no' | 'maybe'
         note: explanation string
     """
     profile = profile or get_active_profile()
     loc_cfg = profile["location"]
-    india_pos = loc_cfg.get("india_positive") or []
-    india_neg = loc_cfg.get("india_negative") or []
+    kenya_pos = loc_cfg.get("kenya_positive") or []
+    kenya_neg = loc_cfg.get("kenya_negative") or []
     tz_good_list = loc_cfg.get("timezone_compatible") or []
     tz_bad_list = loc_cfg.get("timezone_incompatible") or []
 
     full_text = f"{location} {description}".lower()
     loc_lower = location.lower()
 
-    positive_hits = [kw for kw in india_pos if kw in full_text]
-    negative_hits = [kw for kw in india_neg if kw in full_text]
+    positive_hits = [kw for kw in kenya_pos if kw in full_text]
+    negative_hits = [kw for kw in kenya_neg if kw in full_text]
     tz_good = [kw for kw in tz_good_list if kw in full_text]
     tz_bad = [kw for kw in tz_bad_list if kw in full_text]
 
@@ -85,15 +85,15 @@ def check_india_friendly(location: str, description: str,
             "note": f"Timezone mismatch: {', '.join(tz_bad[:2])}",
         }
 
-    india_direct = any(kw in full_text for kw in [
-        "india", "bangalore", "bengaluru", "mumbai", "hyderabad",
+    kenya_direct = any(kw in full_text for kw in [
+        "kenya", "bangalore", "bengaluru", "mumbai", "hyderabad",
         "pune", "delhi", "chennai", "kolkata", "noida", "gurgaon",
-        "gurugram", "remote - india",
+        "gurugram", "remote - kenya",
     ])
-    if india_direct:
+    if kenya_direct:
         return {
             "result": "yes",
-            "note": f"India mentioned: {', '.join(positive_hits[:3])}",
+            "note": f"kenya mentioned: {', '.join(positive_hits[:3])}",
         }
 
     global_signals = any(kw in full_text for kw in [
@@ -129,15 +129,15 @@ def check_india_friendly(location: str, description: str,
     ):
         return {
             "result": "maybe",
-            "note": "Remote — no region specified, may accept India",
+            "note": "Remote — no region specified, may accept kenya",
         }
 
-    non_india_regions = [
+    non_kenya_regions = [
         "united states", "usa", "us", "canada", "uk",
         "united kingdom", "europe", "eu", "germany",
         "france", "australia", "spain", "netherlands",
     ]
-    if any(r in loc_lower for r in non_india_regions):
+    if any(r in loc_lower for r in non_kenya_regions):
         return {
             "result": "no",
             "note": f"Location restricted to: {location}",
@@ -226,8 +226,8 @@ def score_job(title: str, description: str, location: str = "",
         score += min(len(signal_matches) * 4, w_signal)
         reasons.append(f"Signals: {', '.join(signal_matches[:5])}")
 
-    # India-friendly
-    india_check = check_india_friendly(location, description, profile=profile)
+    # kenya-friendly
+    kenya_check = check_kenya_friendly(location, description, profile=profile)
 
     score = max(0, min(100, score))
 
@@ -237,6 +237,6 @@ def score_job(title: str, description: str, location: str = "",
         "experience_level": exp_level,
         "reasons": reasons,
         "red_flags": red_flags,
-        "india_friendly": india_check["result"],
-        "location_note": india_check["note"],
+        "kenya_friendly": kenya_check["result"],
+        "location_note": kenya_check["note"],
     }
