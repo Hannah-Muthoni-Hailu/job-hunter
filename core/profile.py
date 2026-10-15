@@ -56,8 +56,8 @@ def default_config() -> dict:
             },
         },
         "location": {
-            "india_positive": [],
-            "india_negative": [],
+            "kenya_positive": [],
+            "kenya_negative": [],
             "timezone_compatible": [],
             "timezone_incompatible": [],
         },
@@ -459,8 +459,8 @@ def _legacy_profile_from_settings() -> dict:
         {"query": "backend engineer python", "country": "US", "date_posted": "week", "remote_jobs_only": True},
     ]
 
-    cfg["location"]["india_positive"] = list(getattr(s, "LOCATION_INDIA_POSITIVE", []))
-    cfg["location"]["india_negative"] = list(getattr(s, "LOCATION_INDIA_NEGATIVE", []))
+    cfg["location"]["kenya_positive"] = list(getattr(s, "LOCATION_KENYA_POSITIVE", []))
+    cfg["location"]["kenya_negative"] = list(getattr(s, "LOCATION_KENYA_NEGATIVE", []))
     cfg["location"]["timezone_compatible"] = list(getattr(s, "TIMEZONE_COMPATIBLE", []))
     cfg["location"]["timezone_incompatible"] = list(getattr(s, "TIMEZONE_INCOMPATIBLE", []))
 
