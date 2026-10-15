@@ -99,7 +99,7 @@ def _score_and_store(jobs: list[Job], stats: dict, profile: dict = None):
 
         job.relevance_score = result["score"]
         job.experience_level = result["experience_level"]
-        job.india_friendly = result["india_friendly"]
+        job.kenya_friendly = result["kenya_friendly"]
         job.location_note = result["location_note"]
 
         existing_tech = set(t.strip() for t in job.tech_stack.split(",") if t.strip())
