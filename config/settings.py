@@ -17,7 +17,7 @@ RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY", "")
 # Email Settings (Gmail SMTP)
 SENDER_EMAIL = os.getenv("SENDER_EMAIL", "")
 SENDER_APP_PASSWORD = os.getenv("SENDER_APP_PASSWORD", "")
-RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL", "parmanandprajapati0009@gmail.com")
+RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL", "hamuha330@gmail.com")
 
 # Daily digest scheduler
 DAILY_EMAIL_HOUR = int(os.getenv("DAILY_EMAIL_HOUR", "9"))   # IST hour
@@ -30,47 +30,48 @@ GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID", "")
 
 # Search criteria defaults
 DEFAULT_SEARCH_TERMS = [
-    "backend developer python",
-    "python django developer",
-    "fastapi developer",
-    "backend engineer python",
-    "python developer",
+    "remote backend developer python",
+    "remote fastapi developer",
+    "remote backend engineer python",
+    "remote python developer",
+    "remote content officer",
+    "remote web content writer",
+    "remote seo manager",
+    "remote seo analyst",
+    "remote seo specialist",
+    "remote technical seo specialist",
 ]
 
 RELEVANT_TECH = [
-    "python", "django", "fastapi", "flask", "celery", "redis",
-    "postgresql", "postgres", "mysql", "mongodb", "docker",
-    "kubernetes", "aws", "gcp", "rest", "graphql", "node",
-    "nodejs", "express", "sql", "nosql", "microservices",
-    "rabbitmq", "kafka", "elasticsearch",
+    "python", "fastapi", "postgresql", "postgres", "mysql", "mongodb", 
+    "docker", "kubernetes", "node", "nodejs", "express", "sql", "nosql", 
+    "microservices", "seo optimization", "content writing"
 ]
 
 TITLE_KEYWORDS_POSITIVE = [
     "backend", "back-end", "back end", "python", "django",
     "fastapi", "software engineer", "software developer",
-    "full stack", "fullstack", "full-stack", "api developer",
+    "full stack", "fullstack", "full-stack", "seo analyst", 
+    "seo manager", "remote", "technical seo specialist"
 ]
 
 TITLE_KEYWORDS_NEGATIVE = [
     "frontend", "front-end", "front end", "ios", "android",
     "mobile", "devops", "data scientist", "machine learning",
     "ml engineer", "ui/ux", "designer", "qa", "test",
-    "intern", "internship", "trainee", "junior",
+    "junior",
 ]
 
 # ── Location / India Remote Filtering ──
 
 # Keywords that CONFIRM India/Asia people can apply
 LOCATION_INDIA_POSITIVE = [
-    "india", "asia", "worldwide", "global", "anywhere",
-    "apac", "asia pacific", "asia-pacific",
+    "worldwide", "global", "anywhere", "africa",
     "remote - global", "remote global", "globally distributed",
     "work from anywhere", "location independent",
-    "south asia", "southeast asia", "emea/apac",
-    "mumbai", "bangalore", "bengaluru", "hyderabad", "pune",
-    "delhi", "chennai", "kolkata", "noida", "gurgaon", "gurugram",
-    "new delhi", "kochi", "jaipur", "ahmedabad", "remote - india",
-    "ist", "indian standard time",
+    "east africa", "eastern africa", "emea", "emea/apac",
+    "nairobi", "kenya", "nzalae/nzawa", "remote-kenya", 
+    "remote kenya",
 ]
 
 # Keywords that BLOCK India — these mean US/EU only
@@ -82,15 +83,14 @@ LOCATION_INDIA_NEGATIVE = [
     "european union only", "uk-based", "eu-based",
     "must be authorized to work in the united states",
     "no visa sponsorship", "us citizen", "us work authorization",
-    "est/cst/pst", "americas only", "americas timezone",
+    "est/cst/pst/ist", "india", "americas only", "americas timezone",
     "north america only", "na only", "latam only",
 ]
 
 # Timezone overlap hints — India (IST = UTC+5:30)
 # These timezones have reasonable overlap with IST
 TIMEZONE_COMPATIBLE = [
-    "ist", "gmt", "utc", "cet", "eet", "ast",
-    "flexible", "async", "asynchronous",
+    "eat", "gmt", "utc", "flexible", "async", "asynchronous",
     "overlap", "any timezone", "all timezones",
 ]
 
@@ -98,7 +98,7 @@ TIMEZONE_INCOMPATIBLE = [
     "pst only", "est only", "cst only", "mst only",
     "pacific time only", "eastern time only",
     "us timezone required", "us hours required",
-    "core hours pst", "core hours est",
+    "core hours pst", "core hours est", "ist"
 ]
 
 # Minimum relevance score to show in polished results
