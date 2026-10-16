@@ -75,7 +75,7 @@ async def api_get_jobs(
     search: Optional[str] = None,
     location: Optional[str] = None,
     tech: Optional[str] = None,
-    india_friendly: Optional[str] = None,
+    kenya_friendly: Optional[str] = None,
     company_domain: Optional[str] = None,
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
@@ -83,7 +83,7 @@ async def api_get_jobs(
     jobs = get_jobs(
         source=source, status=status, min_score=min_score,
         search=search, location=location, tech=tech,
-        india_friendly=india_friendly, company_domain=company_domain,
+        kenya_friendly=kenya_friendly, company_domain=company_domain,
         limit=limit, offset=offset,
     )
     return {"jobs": jobs, "count": len(jobs)}
@@ -131,14 +131,14 @@ async def api_collect(generate_outreach: bool = Query(True)):
 async def api_get_companies(
     ats_platform: Optional[str] = None,
     crawl_status: Optional[str] = None,
-    india_friendly: Optional[str] = None,
+    kenya_friendly: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = Query(200, ge=1, le=500),
     offset: int = Query(0, ge=0),
 ):
     companies = get_companies(
         ats_platform=ats_platform, crawl_status=crawl_status,
-        india_friendly=india_friendly, search=search,
+        kenya_friendly=kenya_friendly, search=search,
         limit=limit, offset=offset,
     )
     return {"companies": companies, "count": len(companies)}
@@ -153,7 +153,7 @@ class CompanyInput(BaseModel):
     founded_year: int = 0
     employee_count: str = ""
     tags: str = ""
-    india_friendly: str = "unknown"
+    kenya_friendly: str = "unknown"
     notes: str = ""
 
 
@@ -212,7 +212,7 @@ async def api_seed_companies():
 
 @app.post("/api/companies/mega-seed")
 async def api_mega_seed():
-    """Load 250+ Indian + MNC + Global remote companies."""
+    """Load 250+ kenyan + MNC + Global remote companies."""
     from core.mega_companies import get_all_mega_companies
     companies = get_all_mega_companies()
     added = 0
@@ -261,7 +261,7 @@ async def api_discover_companies(
 @app.post("/api/export/sheets")
 async def api_export_sheets(
     min_score: int = Query(0, ge=0, le=100),
-    india_friendly: Optional[str] = None,
+    kenya_friendly: Optional[str] = None,
     source: Optional[str] = None,
     search: Optional[str] = None,
     tech: Optional[str] = None,
@@ -278,7 +278,7 @@ async def api_export_sheets(
     try:
         result = export_to_sheet(
             creds_file=creds, spreadsheet_id=sheet_id, sheet_name=sheet_name,
-            min_score=min_score, india_friendly=india_friendly,
+            min_score=min_score, kenya_friendly=kenya_friendly,
             source=source, search=search, tech=tech, mode=mode,
         )
         return result
@@ -352,12 +352,12 @@ async def api_outreach_refresh(limit: int = Query(15, ge=1, le=50),
 async def api_generate_outreach(
     min_score: int = Query(40, ge=0, le=100),
     limit: int = Query(15, ge=1, le=50),
-    india_friendly: Optional[str] = "maybe",
+    kenya_friendly: Optional[str] = "maybe",
 ):
     """For top N high-scoring jobs without existing outreach,
     build LinkedIn search URLs + generate DMs. No API credits used."""
     generated = generate_outreach_for_top_jobs(
-        limit=limit, min_score=min_score, india_friendly=india_friendly,
+        limit=limit, min_score=min_score, kenya_friendly=kenya_friendly,
     )
     if generated == 0:
         return {"generated": 0, "message": "No new jobs eligible for outreach"}
@@ -669,10 +669,10 @@ async def api_rescore_all(
 
             conn.execute(
                 "UPDATE jobs SET relevance_score = ?, experience_level = ?, "
-                "india_friendly = ?, location_note = ?, tech_stack = ?, "
+                "kenya_friendly = ?, location_note = ?, tech_stack = ?, "
                 "scored_profile_id = ? WHERE id = ?",
                 (result["score"], result["experience_level"],
-                 result["india_friendly"], result["location_note"],
+                 result["kenya_friendly"], result["location_note"],
                  tech_stack, profile_id, r["id"]),
             )
             updated += 1
